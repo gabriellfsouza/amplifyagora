@@ -1,4 +1,7 @@
 import React from "react";
+import {API,graphqlOperation} from 'aws-amplify';
+import {searchMarkets} from '../graphql/queries';
+
 import NewMarket from '../components/NewMarket';
 import MarketList from '../components/MarketList';
 
@@ -15,7 +18,30 @@ class HomePage extends React.Component {
 
   handleSearch = async event => {
     event.preventDefault();
-    console.log(this.state.searchTerm);
+    try {
+      this.setState({isSearching:true});
+      const result = await API.graphql(graphqlOperation(searchMarkets,{
+        filter:{
+          or:[
+            {name: {match:this.state.searchTerm}},
+            {owner: {match:this.state.searchTerm}},
+            {tags: {match:this.state.searchTerm}},
+          ]
+        },
+        sort:{
+          field: "createdAt",
+          direction: "desc",
+        }
+      }));
+      this.setState({
+        searchResults:result.data.searchMarkets.items,
+        isSearching: false,
+      });
+      console.log({result})
+    } catch (error) {
+      console.log(error);
+    }
+    
   }
 
   render() {
@@ -27,7 +53,7 @@ class HomePage extends React.Component {
         handleClearSearch={this.handleClearSearch}
         handleSearch={this.handleSearch}
       />
-      <MarketList />
+      <MarketList searchResults={this.state.searchResults}/>
     </>;
   }
 }
