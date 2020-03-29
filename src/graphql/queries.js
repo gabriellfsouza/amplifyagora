@@ -10,6 +10,7 @@ export const getMarket = /* GraphQL */ `
         items {
           id
           description
+          marketID
           price
           shipped
           owner
@@ -49,6 +50,7 @@ export const getProduct = /* GraphQL */ `
     getProduct(id: $id) {
       id
       description
+      marketID
       market {
         id
         name
@@ -81,6 +83,7 @@ export const listProducts = /* GraphQL */ `
       items {
         id
         description
+        marketID
         market {
           id
           name

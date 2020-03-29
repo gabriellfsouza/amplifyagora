@@ -13,6 +13,7 @@ export const createMarket = /* GraphQL */ `
         items {
           id
           description
+          marketID
           price
           shipped
           owner
@@ -38,6 +39,7 @@ export const updateMarket = /* GraphQL */ `
         items {
           id
           description
+          marketID
           price
           shipped
           owner
@@ -63,6 +65,7 @@ export const deleteMarket = /* GraphQL */ `
         items {
           id
           description
+          marketID
           price
           shipped
           owner
@@ -84,6 +87,7 @@ export const createProduct = /* GraphQL */ `
     createProduct(input: $input, condition: $condition) {
       id
       description
+      marketID
       market {
         id
         name
@@ -114,6 +118,7 @@ export const updateProduct = /* GraphQL */ `
     updateProduct(input: $input, condition: $condition) {
       id
       description
+      marketID
       market {
         id
         name
@@ -144,6 +149,7 @@ export const deleteProduct = /* GraphQL */ `
     deleteProduct(input: $input, condition: $condition) {
       id
       description
+      marketID
       market {
         id
         name
@@ -216,6 +222,7 @@ export const createOrder = /* GraphQL */ `
       product {
         id
         description
+        marketID
         market {
           id
           name

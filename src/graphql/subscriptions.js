@@ -10,6 +10,7 @@ export const onCreateMarket = /* GraphQL */ `
         items {
           id
           description
+          marketID
           price
           shipped
           owner
@@ -32,6 +33,7 @@ export const onUpdateMarket = /* GraphQL */ `
         items {
           id
           description
+          marketID
           price
           shipped
           owner
@@ -54,6 +56,7 @@ export const onDeleteMarket = /* GraphQL */ `
         items {
           id
           description
+          marketID
           price
           shipped
           owner
@@ -72,6 +75,7 @@ export const onCreateProduct = /* GraphQL */ `
     onCreateProduct(owner: $owner) {
       id
       description
+      marketID
       market {
         id
         name
@@ -99,6 +103,7 @@ export const onUpdateProduct = /* GraphQL */ `
     onUpdateProduct(owner: $owner) {
       id
       description
+      marketID
       market {
         id
         name
@@ -126,6 +131,7 @@ export const onDeleteProduct = /* GraphQL */ `
     onDeleteProduct(owner: $owner) {
       id
       description
+      marketID
       market {
         id
         name
