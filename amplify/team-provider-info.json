@@ -1,19 +1,19 @@
 {
     "packtpub": {
         "awscloudformation": {
-            "AuthRoleName": "amplify-amplifyagora-packtpub-145814-authRole",
-            "UnauthRoleArn": "arn:aws:iam::416550131630:role/amplify-amplifyagora-packtpub-145814-unauthRole",
-            "AuthRoleArn": "arn:aws:iam::416550131630:role/amplify-amplifyagora-packtpub-145814-authRole",
+            "AuthRoleName": "amplify-amplifyagora-packtpub-50549-authRole",
+            "UnauthRoleArn": "arn:aws:iam::416550131630:role/amplify-amplifyagora-packtpub-50549-unauthRole",
+            "AuthRoleArn": "arn:aws:iam::416550131630:role/amplify-amplifyagora-packtpub-50549-authRole",
             "Region": "us-east-1",
-            "DeploymentBucketName": "amplify-amplifyagora-packtpub-145814-deployment",
-            "UnauthRoleName": "amplify-amplifyagora-packtpub-145814-unauthRole",
-            "StackName": "amplify-amplifyagora-packtpub-145814",
-            "StackId": "arn:aws:cloudformation:us-east-1:416550131630:stack/amplify-amplifyagora-packtpub-145814/decac970-71e6-11ea-8dd2-1201663355d3",
-            "AmplifyAppId": "d380xrgzudpq68"
+            "DeploymentBucketName": "amplify-amplifyagora-packtpub-50549-deployment",
+            "UnauthRoleName": "amplify-amplifyagora-packtpub-50549-unauthRole",
+            "StackName": "amplify-amplifyagora-packtpub-50549",
+            "StackId": "arn:aws:cloudformation:us-east-1:416550131630:stack/amplify-amplifyagora-packtpub-50549/9b542a30-78a6-11ea-874b-0e4a688d3275",
+            "AmplifyAppId": "d1vrq81z50ifsw"
         },
         "categories": {
             "auth": {
-                "amplifyagora5cc07281": {}
+                "amplifyagora95247a7b": {}
             }
         }
     }

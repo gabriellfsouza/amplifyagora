@@ -1,6 +1,6 @@
 {
 	"auth": {
-		"amplifyagora5cc07281": {
+		"amplifyagora95247a7b": {
 			"service": "Cognito",
 			"providerPlugin": "awscloudformation",
 			"dependsOn": []
@@ -16,7 +16,7 @@
 					"defaultAuthentication": {
 						"authenticationType": "AMAZON_COGNITO_USER_POOLS",
 						"userPoolConfig": {
-							"userPoolId": "authamplifyagora5cc07281"
+							"userPoolId": "authamplifyagora95247a7b"
 						}
 					}
 				}
@@ -24,7 +24,7 @@
 		}
 	},
 	"storage": {
-		"s318da5828": {
+		"s3c692b989": {
 			"service": "S3",
 			"providerPlugin": "awscloudformation"
 		}
