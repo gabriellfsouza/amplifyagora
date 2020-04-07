@@ -6,7 +6,7 @@ import PayButton from './PayButton';
 import { Notification, Popover, Button, Dialog, Card, Form, Input, Radio } from "element-react";
 import {convertCentsToDollars, convertDollarsToCents} from '../utils';
 import {UserContext} from '../App';
-import {updateProduct} from '../graphql/mutations';
+import {updateProduct, deleteProduct} from '../graphql/mutations';
 
 class Product extends React.Component {
   state = {
@@ -14,6 +14,7 @@ class Product extends React.Component {
     description:'',
     price:'',
     shipped:false,
+    deleteProductDialog: false,
   };
 
   handleUpdateProduct = async productId =>{
@@ -34,15 +35,31 @@ class Product extends React.Component {
         message: "Product successfully updated!",
         type: 'success'
       });
-      setTimeout(()=>window.location.reload(),2000);
     } catch (error) {
       console.error(error);
+    }
+  }
+
+  handleDeleteProduct = async(productId) =>{
+    try {
+      this.setState({deleteProductDialog:false});
+      const input = {
+        id: productId
+      };
+      const result = await API.graphql(graphqlOperation(deleteProduct,{input}));
+      Notification({
+        title: 'Success',
+        message: "Product successfully deleted!",
+        type: 'success'
+      });
+    } catch (error) {
+      console.error(`Failed to delete product with id ${productId}`,error);
     }
   }
   
   render() {
     const {product} = this.props;
-    const {updateProductDialog,shipped,description,price} = this.state;
+    const {updateProductDialog,deleteProductDialog,shipped,description,price} = this.state;
     return <UserContext.Consumer>
     {({user})=>{
       const isProductOwner = user && user.attributes.sub === product.owner;
@@ -72,7 +89,7 @@ class Product extends React.Component {
                 ${convertCentsToDollars(product.price)}
               </span>
               {!isProductOwner && (
-                <PayButton />
+                <PayButton product={product} user={user} />
               )}
             </div>
           </div>
@@ -92,7 +109,35 @@ class Product extends React.Component {
                   price: convertCentsToDollars(product.price)
                 })}
               />
-              <Button type="danger" icon="delete"/>
+              <Popover 
+                placement="top" 
+                width="160" 
+                trigger="click" 
+                visible={deleteProductDialog}
+                content={<>
+                  <p>Do you want to delete this?</p>
+                  <div className="text-right">
+                    <Button 
+                      size="mini" 
+                      type="text" 
+                      className="m-1" 
+                      onClick={()=>this.setState({deleteProductDialog:false})}
+                    >
+                      Cancel
+                    </Button>
+                    <Button 
+                      type="primary" 
+                      size="mini" 
+                      className="m-1" 
+                      onClick={()=>this.handleDeleteProduct(product.id)}
+                    >
+                      Confirm
+                    </Button>
+                  </div>
+                </>}
+              >
+              <Button type="danger" icon="delete" onClick={()=>this.setState({deleteProductDialog:true})}/>
+              </Popover>
             </>
           )}
         </div>

@@ -13,7 +13,7 @@ type Market
 
 type Product
   @model
-  @auth(rules: [{ allow: owner, identityField: "sub" }])
+  @auth(rules: [{ allow: owner, identityField: "sub" }, { allow: private }])
   @key(name: "byProduct", fields: ["marketID", "description"]) {
   id: ID!
   description: String!
