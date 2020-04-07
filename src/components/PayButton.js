@@ -1,4 +1,5 @@
 import React from "react";
+import {API} from 'aws-amplify';
 import StripeCheckout from 'react-stripe-checkout';
 // import { Notification, Message } from "element-react";
 
@@ -8,7 +9,26 @@ const stripeConfig = {
 };
 
 const PayButton = ({product,user}) => {
+  const handleCharge = async (token)=>{
+    try {
+      const result = await API.post('orderlambda','/charge',{
+        body: {
+          token,
+          charge: {
+            currency: stripeConfig.currency,
+            amount: product.price,
+            description: product.description
+          }
+        }
+      });
+      console.log({result});
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
   return <StripeCheckout
+    token={handleCharge}
     email={user.attributes.email}
     name={product.description}
     amount={product.price}

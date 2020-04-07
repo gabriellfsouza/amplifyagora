@@ -1,0 +1,52 @@
+{
+    "permissions": {
+        "auth": {
+            "amplifyagora95247a7b": [
+                "create",
+                "read",
+                "update",
+                "delete"
+            ]
+        },
+        "api": {
+            "amplifyagora": [
+                "create",
+                "read",
+                "update",
+                "delete"
+            ]
+        },
+        "storage": {
+            "s3c692b989": [
+                "create",
+                "read",
+                "update",
+                "delete"
+            ],
+            "Market:@model(appsync)": [
+                "create",
+                "read",
+                "update",
+                "delete"
+            ],
+            "Product:@model(appsync)": [
+                "create",
+                "read",
+                "update",
+                "delete"
+            ],
+            "User:@model(appsync)": [
+                "create",
+                "read",
+                "update",
+                "delete"
+            ],
+            "Order:@model(appsync)": [
+                "create",
+                "read",
+                "update",
+                "delete"
+            ]
+        }
+    }
+}
