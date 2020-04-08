@@ -26,6 +26,7 @@ class NewProduct extends React.Component {
       this.setState({isUploading:true});
       const visibility = "public";
       const { identityId } = await Auth.currentCredentials();
+      const {attributes:{sub: owner }} = await Auth.currentUserInfo();
       const filename = `/${visibility}/${identityId}/${Date.now()}-${this.state.image.name}`;
       const uploadedFile = await Storage.put(filename,this.state.image.file,{
         contentType: this.state.image.type,
@@ -45,11 +46,12 @@ class NewProduct extends React.Component {
         description: this.state.description,
         shipped: this.state.shipped,
         price: convertDollarsToCents(this.state.price),
+        owner,
         file
       };
       const result = await API.graphql(graphqlOperation(createProduct,{input}));
       console.log('Product created',result);
-      Notification({titl:'Success',message:"Product successfully created!",type:"success"});
+      Notification({title:'Success',message:"Product successfully created!",type:"success"});
       this.setState({...initialState})
     } catch (error) {
       console.error('Error adding product',error);

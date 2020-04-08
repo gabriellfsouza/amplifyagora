@@ -1,14 +1,18 @@
 import React from "react";
-import {Auth, Hub} from 'aws-amplify';
+import {API, graphqlOperation, Auth, Hub} from 'aws-amplify';
 import { Authenticator, AmplifyTheme } from 'aws-amplify-react';
-import { BrowserRouter as Router, Route } from 'react-router-dom';
-
+import { Router, Route } from 'react-router-dom';
+import createBrowserHistory from 'history/createBrowserHistory';
+import { getUser } from './graphql/queries';
+import { registerUser } from './graphql/mutations';
 import HomePage from './pages/HomePage';
 import ProfilePage from './pages/ProfilePage';
 import MarketPage from './pages/MarketPage';
 import Navbar from './components/Navbar';
 
 import "./App.css";
+
+export const history = createBrowserHistory();
 
 export const UserContext = React.createContext();
 
@@ -33,6 +37,7 @@ class App extends React.Component {
       case "signIn":
         console.log('signed in');
         this.getUserData();
+        this.registerNewUser(capsule.payload.data)
         break;
       case "signUp":
         console.log('signed up');
@@ -43,6 +48,30 @@ class App extends React.Component {
         break;
       default:
         return;
+    }
+  }
+
+  registerNewUser = async signInData =>{
+    const getUserInput = {
+      id: signInData.signInUserSession.idToken.payload.sub,
+    };
+    const {data} = await API.graphql(graphqlOperation(getUser,getUserInput));
+    // if we can't get a user (meaning the user hasn't been registered before,
+    // then we execute registerUsre)
+    if(!data.getUser){
+      try {
+        const registerUserInput = {
+          ...getUserInput,
+          username: signInData.username,
+          email: signInData.signInUserSession.idToken.payload.email,
+          registered: true
+        }
+
+        const newUser = await API.graphql(graphqlOperation(registerUser, { input: registerUserInput }));
+        console.log({newUser})
+      } catch (error) {
+        console.error('Error registering new user',error)
+      }
     }
   }
 
@@ -60,7 +89,7 @@ class App extends React.Component {
     ?(<Authenticator theme={theme}/>) 
     :(
       <UserContext.Provider value={{user}}>
-        <Router>
+        <Router history={history}>
         <>
           {/* Navbar */}
           <Navbar user={user} handleSignout={this.handleSignout} />

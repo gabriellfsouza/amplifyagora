@@ -57,6 +57,17 @@ var bodyParser = require('body-parser')
 var awsServerlessExpressMiddleware = require('aws-serverless-express/middleware')
 require('dotenv').config();
 var stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
+var AWS = require('aws-sdk');
+
+const convertCentsToDollars = price => (price/100).toFixed(2);
+
+const config = {
+  region: "us-east-1",
+  adminEmail: process.env.ADMIN_EMAIL,
+};
+
+const ses = new AWS.SES(config);
+
 // declare a new express app
 var app = express()
 app.use(bodyParser.json())
@@ -69,13 +80,10 @@ app.use(function(req, res, next) {
   next()
 });
 
-/****************************
-* Example post method *
-****************************/
 
-app.post('/charge', async(req,res)=>{
+const chargeHandler = async(req,res, next)=>{
   const {token} = req.body;
-  const {currency,amount,description} = req.body.charge;
+  const {currency,amount,description, shipped} = req.body.charge;
   try {
     const charge = await stripe.charges.create({
       source: token.id,
@@ -83,11 +91,66 @@ app.post('/charge', async(req,res)=>{
       currency,
       description,
     });
-    res.json(charge);
+    if(charge.status === 'succeeded'){
+      req.charge = charge;
+      req.description = description;
+      req.email = req.body.email;
+      next();
+    }
   } catch (error) {
     res.status(500).json({error})
   }
-});
+};
+
+const emailHandler = async(req,res)=>{
+  const {charge, description,email:{shipped,customerEmail,ownerEmail}} =  req;
+  try {
+    const data = await ses.sendEmail({
+      Source: config.adminEmail,
+      ReturnPath: config.adminEmail,
+      Destination: {
+        ToAddresses: [config.adminEmail,customerEmail,ownerEmail]
+      },
+      Message: {
+        Subject: {
+          Data: "Order Details - AmplifyAgora"
+        },
+        Body: {
+          Html: {
+            Charset: 'UTF-8',
+            Data: `
+            <h3>Order Processed!</h3>
+            <p><span style="font-weight:bold;">${description}</span> -
+            $${convertCentsToDollars(charge.amount)}</p>
+            
+            <p>Customer Email: <a href="mailto:${customerEmail}">${customerEmail}</a></p>
+            <p>Contact your seller: <a href="mailto:${ownerEmail}">${ownerEmail}</a></p>
+
+            ${shipped ? `
+              <h4>Mailing Address</h4>
+              <p>${charge.source.name}</p>
+              <p>${charge.source.address_line1}</p>
+              <p>${charge.source.city}, ${charge.source.address_state} ${charge.source.address_zip}</p>
+            ` : "Emailed product" }
+
+            <p style="font-style: italic; color: grey;">
+              ${shipped ? 
+                `Your product will be shipped in 2-3 days` :
+                `Check your verified email for your emailed product`
+              }
+            </p>
+            `
+          }
+        }
+      }
+    }).promise();
+    res.json({message: "Order processed successfully", charge, data})
+  } catch (error) {
+    return res.status(500,{error});
+  }
+};
+
+app.post('/charge', chargeHandler, emailHandler);
 
 app.listen(3000, function() {
     console.log("App started")

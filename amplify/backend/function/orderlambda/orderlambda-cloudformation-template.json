@@ -195,7 +195,7 @@
 				"Timeout": "25",
 				"Code": {
 					"S3Bucket": "amplify-amplifyagora-packtpub-50549-deployment",
-					"S3Key": "amplify-builds/orderlambda-6f57725030354c424635-build.zip"
+					"S3Key": "amplify-builds/orderlambda-6b664a32426966315764-build.zip"
 				}
 			}
 		},
@@ -1171,6 +1171,15 @@
 									]
 								}
 							]
+						},
+						{
+							"Effect": "Allow",
+							"Action": [
+								"ses:SendEmail",
+								"ses:SendTemplatedEmail",
+								"ses:SendRawEmail"
+							],
+							"Resource": "arn:aws:ses:us-east-1:416550131630:identity/gabriellfsouza@gmail.com"
 						}
 					]
 				}
