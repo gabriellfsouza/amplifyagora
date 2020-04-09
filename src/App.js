@@ -19,17 +19,25 @@ export const UserContext = React.createContext();
 class App extends React.Component {
   state = {
     user: null,
+    userAttributes: {}
   };
 
-  componentDidMount(){
-    this.getUserData();
+  async componentDidMount(){
+    await this.getUserData();
     Hub.listen('auth',this, 'onHubCapsule');
     console.dir(AmplifyTheme)
   }
 
   getUserData = async ()=>{
     const user = await Auth.currentAuthenticatedUser();
-    user ? this.setState({user}) : this.setState({user:null});
+    user ? this.setState({user},()=>this.getUserAttributes(this.state.user)) : this.setState({user:null});
+  }
+
+  getUserAttributes = async authUserData =>{
+    const attributesArr = await Auth.userAttributes(authUserData);
+    const attributesObj = Auth.attributesToObject(attributesArr);
+    
+    this.setState({userAttributes:attributesObj});
   }
 
   onHubCapsule = capsule =>{
@@ -84,11 +92,11 @@ class App extends React.Component {
   }
 
   render() {
-    const {user} = this.state;
+    const {user,userAttributes} = this.state;
     return !user 
     ?(<Authenticator theme={theme}/>) 
     :(
-      <UserContext.Provider value={{user}}>
+      <UserContext.Provider value={{user, userAttributes}}>
         <Router history={history}>
         <>
           {/* Navbar */}
@@ -96,10 +104,10 @@ class App extends React.Component {
           {/* Routes */}
           <div className="app-container">
             <Route exact path="/" component={HomePage} />
-            <Route path="/profile" component={ProfilePage} />
+            <Route path="/profile" component={() => <ProfilePage user={user} userAttributes={userAttributes} />} />
             <Route path="/markets/:marketId" component={
               ({match})=>
-                <MarketPage marketId={match.params.marketId} user={user} />
+                <MarketPage marketId={match.params.marketId} user={user} userAttributes={userAttributes} />
               } />
           </div>
         </>

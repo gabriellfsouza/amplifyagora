@@ -2,6 +2,7 @@ import React from "react";
 import {API, graphqlOperation} from 'aws-amplify';
 import {S3Image} from 'aws-amplify-react';
 import PayButton from './PayButton';
+import {Link} from 'react-router-dom';
 // prettier-ignore
 import { Notification, Popover, Button, Dialog, Card, Form, Input, Radio } from "element-react";
 import {convertCentsToDollars, convertDollarsToCents} from '../utils';
@@ -61,8 +62,9 @@ class Product extends React.Component {
     const {product} = this.props;
     const {updateProductDialog,deleteProductDialog,shipped,description,price} = this.state;
     return <UserContext.Consumer>
-    {({user})=>{
-      const isProductOwner = user && user.attributes.sub === product.owner;
+    {({user,userAttributes})=>{
+      const isProductOwner = userAttributes && userAttributes.sub === product.owner;
+      const isEmailVerified = userAttributes && userAttributes.email_verified;
       return <div className="card-container">
         <Card bodyStyle={{padding:0,minWidth:'200px'}}>
           <S3Image 
@@ -88,8 +90,10 @@ class Product extends React.Component {
               <span className="mx-1">
                 ${convertCentsToDollars(product.price)}
               </span>
-              {!isProductOwner && (
-                <PayButton product={product} user={user} />
+              {isEmailVerified ? (!isProductOwner && (
+                <PayButton product={product} user={user} userAttributes={userAttributes}/>
+              )):(
+                <Link to="/profile" className="link">Verify Email</Link>
               )}
             </div>
           </div>

@@ -16,7 +16,7 @@ const getMarket = `
     getMarket(id: $id) {
       id
       name
-      products {
+      products (sortDirection: DESC, limit: 999) {
         items {
           id
           description
@@ -43,6 +43,7 @@ class MarketPage extends React.Component {
     market: null,
     isLoading: true,
     isMarketOwner: false,
+    isEmailVerified: false,
   };
 
   async componentDidMount(){
@@ -97,9 +98,9 @@ class MarketPage extends React.Component {
   }
 
   componentWillUnmount(){
-    this.createProductListener.unsubscribe();
-    this.updateProductListener.unsubscribe();
-    this.deleteProductListener.unsubscribe();
+    if(this.createProductListener) this.createProductListener.unsubscribe();
+    if(this.updateProductListener) this.updateProductListener.unsubscribe();
+    if(this.deleteProductListener) this.deleteProductListener.unsubscribe();
   }
 
   handleGetMarket = async()=>{
@@ -110,6 +111,7 @@ class MarketPage extends React.Component {
     console.log({result});
     this.setState({market:result.data.getMarket, isLoading:false},()=>{
       this.checkMarketOwner();
+      this.checkEmailVerified();
     });
   }
 
@@ -121,8 +123,13 @@ class MarketPage extends React.Component {
     }
   }
 
+  checkEmailVerified = () => {
+    const { userAttributes } = this.props;
+    if(userAttributes) this.setState({isEmailVerified:userAttributes.email_verified});
+  }
+
   render() {
-    const {market,isLoading, isMarketOwner} = this.state;
+    const {market,isLoading, isMarketOwner, isEmailVerified} = this.state;
     return isLoading ? (
       <Loading fullscreen={true} />
     ) : (
@@ -150,7 +157,11 @@ class MarketPage extends React.Component {
               label={<><Icon name="plus" className="icon"/>Add Product</>}
               name="1"
             >
-              <NewProduct marketId={this.props.marketId}/>
+              {isEmailVerified ? <NewProduct marketId={this.props.marketId}/>
+                : <Link to="/profile" className="header">
+                  Verify Your Email Before Adding Products
+                </Link>
+              }
             </Tabs.Pane>
           )}
           {/* Products List */}
