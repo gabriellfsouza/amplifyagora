@@ -10,6 +10,7 @@ import {
 import Product from '../components/Product';
 import NewProduct from '../components/NewProduct';
 // import { getMarket } from '../graphql/queries';
+import { formatProductDate } from '../utils';
 
 const getMarket = `
   query GetMarket($id: ID!) {
@@ -146,7 +147,7 @@ class MarketPage extends React.Component {
         <div className="items-center pt-2">
           <span style={{color:'var(--lightSquidInk',paddingBottom:'1em'}}>
             <Icon className="icon" name="date" />
-            {market.createdAt}
+            {formatProductDate(market.createdAt)}
           </span>
         </div>
 
